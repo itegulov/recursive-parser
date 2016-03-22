@@ -1,0 +1,201 @@
+@(default: String)
+
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <title>Grammar visualization</title>
+
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/jquery-ui-1.9.2.custom.css")">
+        <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/font-awesome.min.css")">
+        <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/bootstrap.min.css")">
+        <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/digraph.css")">
+
+        <script type="text/javascript" src="@routes.Assets.at("javascripts/jquery-2.0.0.min.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.at("javascripts/jquery.form.min.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.at("javascripts/d3.v3.min.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.at("javascripts/dagre-d3.js")"></script>
+
+        <script type="text/javascript" src="@routes.Assets.at("javascripts/tree_builder.js")"></script>
+
+    </head>
+
+    <body>
+
+        <div>
+            <label>
+                <textarea placeholder="Type postfix arithmetic expression here (press enter to submit)."
+                id="sentence_input"
+                class="text-input"
+                rows="3">@default</textarea>
+            </label>
+            <div class="row-fluid row">
+                <div class="span10 mycontent-left">
+                    <svg class="legend-svg">
+                        <g transform="translate(100, 15)">
+                            <rect class="legend" style="fill: #7e7e7e" rx="5" ry="5" width="90" height="37"></rect>
+                            <g transform="translate(10, 10)">
+                                <text>
+                                    <tspan dy="1em">Nonterminal</tspan>
+                                </text>
+                            </g>
+                        </g>
+                        <g transform="translate(230, 15)">
+                            <rect class="legend" style="fill: #92ff7d" rx="5" ry="5" width="80" height="37"></rect>
+                            <g transform="translate(10, 10)">
+                                <text>
+                                    <tspan dy="1em">Operation</tspan>
+                                </text>
+                            </g>
+                        </g>
+                        <g transform="translate(350, 15)">
+                            <rect class="legend" style="fill: #fdb9ff" rx="5" ry="5" width="70" height="37"></rect>
+                            <g transform="translate(10, 10)">
+                                <text>
+                                    <tspan dy="1em">Number</tspan>
+                                </text>
+                            </g>
+                        </g>
+
+                        <g transform="translate(460, 15)">
+                            <rect class="legend" style="fill: #96c2ff" rx="5" ry="5" width="60" height="37"></rect>
+                            <g transform="translate(10, 10)">
+                                <text>
+                                    <tspan dy="1em">Epsilon</tspan>
+                                </text>
+                            </g>
+                        </g>
+                    </svg>
+
+                </div>
+
+            </div>
+        </div>
+
+        <div id="attach">
+            <svg id="svg-canvas" class="main-svg"></svg>
+        </div>
+
+        <script>
+
+            var p = new TreeBuilder.TreeContainer(document.getElementById("sentence_input"));
+
+                @*var input = $("#sentence_input");*@
+                @*input.keypress(function (e) {*@
+                    @*if (e.which == 13) {*@
+                        @*renderText(input.val());*@
+                        @*e.preventDefault();*@
+                    @*}*@
+                @*});*@
+
+                @*function renderText(text) {*@
+                    @*$.ajax({*@
+                        @*type: 'GET',*@
+                        @*dataType: 'html',*@
+                        @*url: "parse",*@
+                        @*data: {*@
+                            @*expression: text*@
+                        @*},*@
+                        @*success: function (data) {*@
+
+                            @*$("#svg-canvas").empty();*@
+
+                            @*var dataParsed = JSON.parse(data);*@
+
+                            @*var nodes = {};*@
+                            @*var edges = [];*@
+
+
+                            @*populate(dataParsed, nodes, edges);*@
+
+                            @*var g = new dagreD3.graphlib.Graph()*@
+                                    @*.setGraph({})*@
+                                    @*.setDefaultEdgeLabel(function () {*@
+                                        @*return {};*@
+                                    @*});*@
+
+                            @*for (var key in nodes) {*@
+                                @*var node = nodes[key];*@
+                                @*g.setNode(node.id, {*@
+                                    @*label: node.label,*@
+                                    @*class: node.nodeclass,*@
+                                    @*//  round edges*@
+                                    @*rx: 5,*@
+                                    @*ry: 5*@
+                                @*});*@
+                            @*}*@
+
+                            @*edges.forEach(function (e) {*@
+                                @*g.setEdge(e.source, e.target, {*@
+                                    @*lineTension: .8,*@
+                                    @*lineInterpolate: "bundle"*@
+                                @*});*@
+                            @*});*@
+
+                            @*var render = new dagreD3.render();*@
+
+                            @*var svg = d3.select("#svg-canvas"),*@
+                                    @*svgGroup = svg.append("g");*@
+
+                            @*render(d3.select("#svg-canvas g"), g);*@
+
+                            @*var xCenterOffset = (svg.attr("width") - g.graph().width) / 2;*@
+                            @*svgGroup.attr("transform", "translate(" + xCenterOffset + ", 20)");*@
+                            @*svg.attr("height", g.graph().height + 40);*@
+
+                            @*//  enable zoom and scrolling*@
+                            @*svgGroup.attr("transform", "translate(5, 5)");*@
+                            @*svg.call(d3.behavior.zoom().on("zoom", function redraw() {*@
+                                @*svgGroup.attr("transform",*@
+                                        @*"translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")");*@
+                            @*}));*@
+
+                        @*},*@
+                        @*error: function (xhr, ajaxOptions, thrownError) {*@
+                            @*console.log(thrownError)*@
+                        @*}*@
+                    @*});*@
+                @*}*@
+
+                @*function populate(data, nodes, edges) {*@
+                    @*var nodeID = Object.keys(nodes).length;*@
+
+                    @*var newNode = {*@
+                        @*label: data.node,*@
+                        @*id: nodeID + ""*@
+                    @*};*@
+
+                    @*var classes = ["type-" + data.type];*@
+                    @*if (data.ne) {*@
+                        @*classes.push("ne-" + data.ne);*@
+                    @*}*@
+
+                    @*newNode.nodeclass = classes.join(" ");*@
+
+                    @*nodes[nodeID] = newNode;*@
+
+                    @*data.children.forEach(function (child) {*@
+                        @*var newChild = populate(child, nodes, edges);*@
+
+                        @*edges.push({*@
+                            @*source: newNode.id,*@
+                            @*target: newChild.id,*@
+                            @*id: newNode.id + "-" + newChild.id*@
+                        @*});*@
+
+                    @*});*@
+
+                    @*return newNode;*@
+                @*}*@
+
+                @*renderText("@default");*@
+
+        </script>
+
+    </body>
+
+</html>
