@@ -1,6 +1,7 @@
 package com.itegulov.parser.client
 
 import com.itegulov.parser.client.dagre.Dagre
+import com.itegulov.parser.shared.SharedMessages
 import org.scalajs.dom
 import org.scalajs.dom.{KeyboardEvent, html}
 import org.scalajs.jquery._
@@ -25,6 +26,7 @@ object MainJS extends JSApp {
         e.preventDefault()
       }
     }
+    renderText(SharedMessages.defaultExpression)
   }
 
   @ScalaJSDefined

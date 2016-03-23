@@ -21,7 +21,7 @@ object Application extends Controller {
   }
 
   def index = Action {
-    Ok(views.html.com.itegulov.parser.index())
+    Ok(views.html.com.itegulov.parser.index(SharedMessages.defaultExpression))
   }
 
   def parseExpression(expression: String) = Action {
