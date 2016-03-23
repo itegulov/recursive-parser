@@ -11,5 +11,3 @@ resolvers ++= Seq(
 
 
 addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.4.6")
-
-addSbtPlugin("com.arpnetworking" % "sbt-typescript" % "0.2.1")

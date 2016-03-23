@@ -2,7 +2,7 @@ name := "RecursiveParserWeb"
 
 version := "1.0"
 
-lazy val `recursiveparserweb` = (project in file(".")).enablePlugins(PlayScala).enablePlugins(SbtWeb)
+lazy val `recursiveparserweb` = (project in file(".")).enablePlugins(PlayScala)
 
 scalaVersion := "2.11.7"
 

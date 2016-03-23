@@ -82,117 +82,115 @@
 
         <script>
 
-            var p = new TreeBuilder.TreeContainer(document.getElementById("sentence_input"));
+                var input = $("#sentence_input");
+                input.keypress(function (e) {
+                    if (e.which == 13) {
+                        renderText(input.val());
+                        e.preventDefault();
+                    }
+                });
 
-                @*var input = $("#sentence_input");*@
-                @*input.keypress(function (e) {*@
-                    @*if (e.which == 13) {*@
-                        @*renderText(input.val());*@
-                        @*e.preventDefault();*@
-                    @*}*@
-                @*});*@
+                function renderText(text) {
+                    $.ajax({
+                        type: 'GET',
+                        dataType: 'html',
+                        url: "parse",
+                        data: {
+                            expression: text
+                        },
+                        success: function (data) {
 
-                @*function renderText(text) {*@
-                    @*$.ajax({*@
-                        @*type: 'GET',*@
-                        @*dataType: 'html',*@
-                        @*url: "parse",*@
-                        @*data: {*@
-                            @*expression: text*@
-                        @*},*@
-                        @*success: function (data) {*@
+                            $("#svg-canvas").empty();
 
-                            @*$("#svg-canvas").empty();*@
+                            var dataParsed = JSON.parse(data);
 
-                            @*var dataParsed = JSON.parse(data);*@
-
-                            @*var nodes = {};*@
-                            @*var edges = [];*@
+                            var nodes = {};
+                            var edges = [];
 
 
-                            @*populate(dataParsed, nodes, edges);*@
+                            populate(dataParsed, nodes, edges);
 
-                            @*var g = new dagreD3.graphlib.Graph()*@
-                                    @*.setGraph({})*@
-                                    @*.setDefaultEdgeLabel(function () {*@
-                                        @*return {};*@
-                                    @*});*@
+                            var g = new dagreD3.graphlib.Graph()
+                                    .setGraph({})
+                                    .setDefaultEdgeLabel(function () {
+                                        return {};
+                                    });
 
-                            @*for (var key in nodes) {*@
-                                @*var node = nodes[key];*@
-                                @*g.setNode(node.id, {*@
-                                    @*label: node.label,*@
-                                    @*class: node.nodeclass,*@
-                                    @*//  round edges*@
-                                    @*rx: 5,*@
-                                    @*ry: 5*@
-                                @*});*@
-                            @*}*@
+                            for (var key in nodes) {
+                                var node = nodes[key];
+                                g.setNode(node.id, {
+                                    label: node.label,
+                                    class: node.nodeclass,
+                                    //  round edges
+                                    rx: 5,
+                                    ry: 5
+                                });
+                            }
 
-                            @*edges.forEach(function (e) {*@
-                                @*g.setEdge(e.source, e.target, {*@
-                                    @*lineTension: .8,*@
-                                    @*lineInterpolate: "bundle"*@
-                                @*});*@
-                            @*});*@
+                            edges.forEach(function (e) {
+                                g.setEdge(e.source, e.target, {
+                                    lineTension: .8,
+                                    lineInterpolate: "bundle"
+                                });
+                            });
 
-                            @*var render = new dagreD3.render();*@
+                            var render = new dagreD3.render();
 
-                            @*var svg = d3.select("#svg-canvas"),*@
-                                    @*svgGroup = svg.append("g");*@
+                            var svg = d3.select("#svg-canvas"),
+                                    svgGroup = svg.append("g");
 
-                            @*render(d3.select("#svg-canvas g"), g);*@
+                            render(d3.select("#svg-canvas g"), g);
 
-                            @*var xCenterOffset = (svg.attr("width") - g.graph().width) / 2;*@
-                            @*svgGroup.attr("transform", "translate(" + xCenterOffset + ", 20)");*@
-                            @*svg.attr("height", g.graph().height + 40);*@
+                            var xCenterOffset = (svg.attr("width") - g.graph().width) / 2;
+                            svgGroup.attr("transform", "translate(" + xCenterOffset + ", 20)");
+                            svg.attr("height", g.graph().height + 40);
 
-                            @*//  enable zoom and scrolling*@
-                            @*svgGroup.attr("transform", "translate(5, 5)");*@
-                            @*svg.call(d3.behavior.zoom().on("zoom", function redraw() {*@
-                                @*svgGroup.attr("transform",*@
-                                        @*"translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")");*@
-                            @*}));*@
+                            //  enable zoom and scrolling
+                            svgGroup.attr("transform", "translate(5, 5)");
+                            svg.call(d3.behavior.zoom().on("zoom", function redraw() {
+                                svgGroup.attr("transform",
+                                        "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")");
+                            }));
 
-                        @*},*@
-                        @*error: function (xhr, ajaxOptions, thrownError) {*@
-                            @*console.log(thrownError)*@
-                        @*}*@
-                    @*});*@
-                @*}*@
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            console.log(thrownError)
+                        }
+                    });
+                }
 
-                @*function populate(data, nodes, edges) {*@
-                    @*var nodeID = Object.keys(nodes).length;*@
+                function populate(data, nodes, edges) {
+                    var nodeID = Object.keys(nodes).length;
 
-                    @*var newNode = {*@
-                        @*label: data.node,*@
-                        @*id: nodeID + ""*@
-                    @*};*@
+                    var newNode = {
+                        label: data.node,
+                        id: nodeID + ""
+                    };
 
-                    @*var classes = ["type-" + data.type];*@
-                    @*if (data.ne) {*@
-                        @*classes.push("ne-" + data.ne);*@
-                    @*}*@
+                    var classes = ["type-" + data.type];
+                    if (data.ne) {
+                        classes.push("ne-" + data.ne);
+                    }
 
-                    @*newNode.nodeclass = classes.join(" ");*@
+                    newNode.nodeclass = classes.join(" ");
 
-                    @*nodes[nodeID] = newNode;*@
+                    nodes[nodeID] = newNode;
 
-                    @*data.children.forEach(function (child) {*@
-                        @*var newChild = populate(child, nodes, edges);*@
+                    data.children.forEach(function (child) {
+                        var newChild = populate(child, nodes, edges);
 
-                        @*edges.push({*@
-                            @*source: newNode.id,*@
-                            @*target: newChild.id,*@
-                            @*id: newNode.id + "-" + newChild.id*@
-                        @*});*@
+                        edges.push({
+                            source: newNode.id,
+                            target: newChild.id,
+                            id: newNode.id + "-" + newChild.id
+                        });
 
-                    @*});*@
+                    });
 
-                    @*return newNode;*@
-                @*}*@
+                    return newNode;
+                }
 
-                @*renderText("@default");*@
+                renderText("@default");
 
         </script>
 
