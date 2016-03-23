@@ -14,7 +14,12 @@ lazy val server = (project in file("server")).settings(
   resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases",
   libraryDependencies ++= Seq(
     "com.vmunier" %% "play-scalajs-scripts" % "0.4.0",
-    "org.webjars" % "jquery" % "1.11.1",
+    "org.webjars" % "jquery" % "2.2.1",
+    "org.webjars" % "jquery-ui" % "1.11.4",
+    "org.webjars" % "font-awesome" % "4.5.0",
+    "org.webjars" % "d3js" % "3.5.12",
+    "org.webjars.npm" % "dagre-d3" % "0.4.17",
+    "org.webjars" % "bootstrap" % "3.3.6",
     specs2 % Test
   )
 ).enablePlugins(PlayScala).
@@ -26,7 +31,9 @@ lazy val client = (project in file("client")).settings(
   persistLauncher := true,
   persistLauncher in Test := false,
   libraryDependencies ++= Seq(
-    "org.scala-js" %%% "scalajs-dom" % "0.8.0"
+    "org.scala-js" %%% "scalajs-dom" % "0.8.0",
+    "be.doeraene" %%% "scalajs-jquery" % "0.9.0",
+    "org.singlespaced" %%% "scalajs-d3" % "0.3.1"
   )
 ).enablePlugins(ScalaJSPlugin).
   dependsOn(sharedJs)

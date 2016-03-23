@@ -10,17 +10,16 @@
 
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        <link rel="stylesheet" type="text/css" href="@routes.Assets.at("../../../../../public/stylesheets/jquery-ui-1.9.2.custom.css")">
-        <link rel="stylesheet" type="text/css" href="@routes.Assets.at("../../../../../public/stylesheets/font-awesome.min.css")">
-        <link rel="stylesheet" type="text/css" href="@routes.Assets.at("../../../../../public/stylesheets/bootstrap.min.css")">
-        <link rel="stylesheet" type="text/css" href="@routes.Assets.at("../../../../../public/stylesheets/digraph.css")">
+        <link rel="stylesheet" type="text/css" href="@routes.Assets.at("lib/jquery-ui/jquery-ui.min.css")">
+        <link rel="stylesheet" type="text/css" href="@routes.Assets.at("lib/font-awesome/css/font-awesome.min.css")">
+        <link rel="stylesheet" type="text/css" href="@routes.Assets.at("lib/bootstrap/css/bootstrap.min.css")">
+        <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/digraph.css")">
 
-        <script type="text/javascript" src="@routes.Assets.at("../../../../../public/javascripts/jquery-2.0.0.min.js")"></script>
-        <script type="text/javascript" src="@routes.Assets.at("../../../../../public/javascripts/jquery.form.min.js")"></script>
-        <script type="text/javascript" src="@routes.Assets.at("../../../../../public/javascripts/d3.v3.min.js")"></script>
-        <script type="text/javascript" src="@routes.Assets.at("../../../../../public/javascripts/dagre-d3.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.at("lib/jquery/jquery.min.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.at("javascripts/jquery.form.min.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.at("lib/d3js/d3.min.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.at("lib/dagre-d3/dagre-d3.min.js")"></script>
 
-        <script type="text/javascript" src="@routes.Assets.at("javascripts/tree_builder.js")"></script>
 
     </head>
 
@@ -81,120 +80,19 @@
         </div>
 
         <script>
+            function moveOnZoom(svg, svgGroup) {
+                svg.call(d3.behavior.zoom().on("zoom", function redraw() {
+                    svgGroup.attr("transform",
+                            "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")");
+                }));
+            }
 
-            var p = new TreeBuilder.TreeContainer(document.getElementById("sentence_input"));
-
-                @*var input = $("#sentence_input");*@
-                @*input.keypress(function (e) {*@
-                    @*if (e.which == 13) {*@
-                        @*renderText(input.val());*@
-                        @*e.preventDefault();*@
-                    @*}*@
-                @*});*@
-
-                @*function renderText(text) {*@
-                    @*$.ajax({*@
-                        @*type: 'GET',*@
-                        @*dataType: 'html',*@
-                        @*url: "parse",*@
-                        @*data: {*@
-                            @*expression: text*@
-                        @*},*@
-                        @*success: function (data) {*@
-
-                            @*$("#svg-canvas").empty();*@
-
-                            @*var dataParsed = JSON.parse(data);*@
-
-                            @*var nodes = {};*@
-                            @*var edges = [];*@
-
-
-                            @*populate(dataParsed, nodes, edges);*@
-
-                            @*var g = new dagreD3.graphlib.Graph()*@
-                                    @*.setGraph({})*@
-                                    @*.setDefaultEdgeLabel(function () {*@
-                                        @*return {};*@
-                                    @*});*@
-
-                            @*for (var key in nodes) {*@
-                                @*var node = nodes[key];*@
-                                @*g.setNode(node.id, {*@
-                                    @*label: node.label,*@
-                                    @*class: node.nodeclass,*@
-                                    @*//  round edges*@
-                                    @*rx: 5,*@
-                                    @*ry: 5*@
-                                @*});*@
-                            @*}*@
-
-                            @*edges.forEach(function (e) {*@
-                                @*g.setEdge(e.source, e.target, {*@
-                                    @*lineTension: .8,*@
-                                    @*lineInterpolate: "bundle"*@
-                                @*});*@
-                            @*});*@
-
-                            @*var render = new dagreD3.render();*@
-
-                            @*var svg = d3.select("#svg-canvas"),*@
-                                    @*svgGroup = svg.append("g");*@
-
-                            @*render(d3.select("#svg-canvas g"), g);*@
-
-                            @*var xCenterOffset = (svg.attr("width") - g.graph().width) / 2;*@
-                            @*svgGroup.attr("transform", "translate(" + xCenterOffset + ", 20)");*@
-                            @*svg.attr("height", g.graph().height + 40);*@
-
-                            @*//  enable zoom and scrolling*@
-                            @*svgGroup.attr("transform", "translate(5, 5)");*@
-                            @*svg.call(d3.behavior.zoom().on("zoom", function redraw() {*@
-                                @*svgGroup.attr("transform",*@
-                                        @*"translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")");*@
-                            @*}));*@
-
-                        @*},*@
-                        @*error: function (xhr, ajaxOptions, thrownError) {*@
-                            @*console.log(thrownError)*@
-                        @*}*@
-                    @*});*@
-                @*}*@
-
-                @*function populate(data, nodes, edges) {*@
-                    @*var nodeID = Object.keys(nodes).length;*@
-
-                    @*var newNode = {*@
-                        @*label: data.node,*@
-                        @*id: nodeID + ""*@
-                    @*};*@
-
-                    @*var classes = ["type-" + data.type];*@
-                    @*if (data.ne) {*@
-                        @*classes.push("ne-" + data.ne);*@
-                    @*}*@
-
-                    @*newNode.nodeclass = classes.join(" ");*@
-
-                    @*nodes[nodeID] = newNode;*@
-
-                    @*data.children.forEach(function (child) {*@
-                        @*var newChild = populate(child, nodes, edges);*@
-
-                        @*edges.push({*@
-                            @*source: newNode.id,*@
-                            @*target: newChild.id,*@
-                            @*id: newNode.id + "-" + newChild.id*@
-                        @*});*@
-
-                    @*});*@
-
-                    @*return newNode;*@
-                @*}*@
-
-                @*renderText("@default");*@
-
+            SVGElement.prototype.getTransformToElement = SVGElement.prototype.getTransformToElement || function(elem) {
+                return elem.getScreenCTM().inverse().multiply(this.getScreenCTM());
+            };
         </script>
+
+        @playscalajs.html.scripts("client")
 
     </body>
 
