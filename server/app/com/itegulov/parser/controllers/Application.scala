@@ -2,6 +2,7 @@ package com.itegulov.parser.controllers
 
 import java.text.ParseException
 
+import com.itegulov.parser.shared.SharedMessages
 import com.itegulov.parser.{Parser, Tree}
 import play.api.Logger
 import play.api.libs.json._
@@ -31,7 +32,7 @@ object Application extends Controller {
       case e: ParseException => BadRequest(JsObject(Map("error" -> JsString("Couldn't parse"))))
       case e: Exception => BadRequest(JsObject(Map("error" -> JsString("Oops, something went wrong"))))
     }
-    Logger.info(s"--> Responding with '${answer}'")
+    Logger.info(s"--> Responding with '$answer'")
     answer
   }
 
