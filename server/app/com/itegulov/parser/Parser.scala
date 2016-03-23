@@ -45,9 +45,3 @@ class Parser {
     parseE(lexicalAnalyser)
   }
 }
-
-object Main extends App {
-  val parser = new Parser
-  val tree = parser.parse("2 3 + 7 -")
-  println(tree)
-}

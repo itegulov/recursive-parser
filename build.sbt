@@ -1,13 +1,41 @@
+import sbt.Project.projectToRef
+
 name := "RecursiveParserWeb"
 
 version := "1.0"
 
-lazy val `recursiveparserweb` = (project in file(".")).enablePlugins(PlayScala).enablePlugins(SbtWeb)
+lazy val clients = Seq(client)
+lazy val scalaV = "2.11.7"
 
-scalaVersion := "2.11.7"
+lazy val server = (project in file("server")).settings(
+  scalaVersion := scalaV,
+  scalaJSProjects := clients,
+  pipelineStages := Seq(scalaJSProd, gzip),
+  resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases",
+  libraryDependencies ++= Seq(
+    "com.vmunier" %% "play-scalajs-scripts" % "0.4.0",
+    "org.webjars" % "jquery" % "1.11.1",
+    specs2 % Test
+  )
+).enablePlugins(PlayScala).
+  aggregate(clients.map(projectToRef): _*).
+  dependsOn(sharedJvm)
 
-libraryDependencies ++= Seq(jdbc, cache, ws, specs2 % Test)
+lazy val client = (project in file("client")).settings(
+  scalaVersion := scalaV,
+  persistLauncher := true,
+  persistLauncher in Test := false,
+  libraryDependencies ++= Seq(
+    "org.scala-js" %%% "scalajs-dom" % "0.8.0"
+  )
+).enablePlugins(ScalaJSPlugin).
+  dependsOn(sharedJs)
 
-unmanagedResourceDirectories in Test <+= baseDirectory(_ / "target/web/public/test")
+lazy val shared = (crossProject.crossType(CrossType.Pure) in file("shared")).
+  settings(scalaVersion := scalaV).
+  jsConfigure(_ enablePlugins ScalaJSPlay)
 
-resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases"
+lazy val sharedJvm = shared.jvm
+lazy val sharedJs = shared.js
+
+onLoad in Global := (Command.process("project server", _: State)) compose (onLoad in Global).value
