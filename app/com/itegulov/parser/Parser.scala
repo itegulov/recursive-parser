@@ -15,34 +15,38 @@ class Parser {
         lexicalAnalyser.nextToken()
         val rightTree: Tree = parseEPrime(lexicalAnalyser)
         Tree("E", Some("nonterminal"), Seq(Tree(numberToken.toString, Some("number"), Nil), rightTree))
-      case _ => throw new ParseException("Expected number, but got " + lexicalAnalyser.curToken, 228); // TODO: fix
+      case _ => throw new ParseException("Expected number, but got " + lexicalAnalyser.curToken, 228) // TODO: fix
     }
   }
 
   private def parseEPrime(lexicalAnalyser: LexicalAnalyser): Tree = {
-    var left: Tree = null
-    try {
-      left = parseE(lexicalAnalyser)
-    } catch {
-      case e: ParseException => return new Tree("E'", Some("nonterminal"), Seq(epsilon))
-    }
     lexicalAnalyser.curToken match {
-      case Some(op: BinaryOperation) =>
+      case Some(numberToken: NumberToken) =>
+        val left = parseE(lexicalAnalyser)
+        val right = parseEPrimePrime(lexicalAnalyser)
+        Tree("E'", Some("nonterminal"), Seq(left, right))
+      case _ => Tree("E'", Some("nonterminal"), Seq(epsilon))
+    }
+  }
+
+  private def parseEPrimePrime(lexicalAnalyser: LexicalAnalyser): Tree = {
+    lexicalAnalyser.curToken match {
+      case Some(binaryOperation: BinaryOperation) =>
         lexicalAnalyser.nextToken()
-        try {
-          val right: Tree = parseEPrime(lexicalAnalyser)
-          new Tree("E'", Some("nonterminal"), Seq(left, new Tree(op.toString, Some("operation"), Nil), right))
-        } catch {
-          case e: ParseException => new Tree("E'", Some("nonterminal"), Seq(left, new Tree(op.toString, Some("operation"), Nil)))
-        }
-      case _ => throw new ParseException("Expected operation, but got gavno", 228) // TODO: fix
+        val right = parseEPrime(lexicalAnalyser)
+        Tree("E''", Some("nonterminal"), Seq(Tree(binaryOperation.toString, Some("operation"), Nil), right))
+      case _ => throw new ParseException("Expected operator, but got " + lexicalAnalyser.curToken, 228) // TODO: fix
     }
   }
 
   def parse(string: String): Tree = {
     val lexicalAnalyser = new LexicalAnalyser(string)
     lexicalAnalyser.nextToken()
-    parseE(lexicalAnalyser)
+    val answer = parseE(lexicalAnalyser)
+    if (lexicalAnalyser.curToken.isEmpty)
+      answer
+    else 
+      throw new ParseException("Expected end of expression, but got " + lexicalAnalyser.curToken, 228)
   }
 }
 

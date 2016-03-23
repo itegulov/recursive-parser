@@ -5,7 +5,9 @@ import java.text.ParseException
 /**
   * @author itegulov
   */
-class LexicalAnalyser(string: String) {
+class LexicalAnalyser(expression: String) {
+
+  val string = expression + " "
 
   private var _curPos: Int = 0
   private var _curToken: Option[Token] = None
@@ -52,7 +54,7 @@ class LexicalAnalyser(string: String) {
       return _curToken
     }
 
-    val next = if (_curPos >= string.length) '\n' else nextChar()
+    val next = nextChar()
 
     curChar match {
       case '+' if Character.isWhitespace(next) =>
