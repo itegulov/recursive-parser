@@ -69,16 +69,19 @@ html, body {
 }
 
 .legend-svg {
-  position: fixed;
-  height: 60px;
   width: 600px;
+  height: 60px;
+  margin: auto;
+  display: block;
 }
 
-textarea {
+#sentence_input {
   border: 1px solid #999999;
-  width: 100%;
-  margin: 5px 0;
-  padding: 3px;
+  width: 60%;
+  margin: auto;
+  display: block;
+  padding: 6px;
+  font-size: 15pt;
 }
 
 .legend {

@@ -15,8 +15,6 @@ lazy val server = (project in file("server")).settings(
   libraryDependencies ++= Seq(
     "com.vmunier" %% "play-scalajs-scripts" % "0.4.0",
     "org.webjars" % "jquery" % "2.2.1",
-    "org.webjars" % "jquery-ui" % "1.11.4",
-    "org.webjars" % "font-awesome" % "4.5.0",
     "org.webjars" % "d3js" % "3.5.12",
     "org.webjars.npm" % "dagre-d3" % "0.4.17",
     "org.webjars" % "bootstrap" % "3.3.6",
