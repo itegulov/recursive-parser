@@ -2,7 +2,6 @@ package com.itegulov.parser.controllers
 
 import java.text.ParseException
 
-import com.itegulov.parser.shared.SharedMessages
 import com.itegulov.parser.{Parser, Tree}
 import play.api.Logger
 import play.api.libs.json._
@@ -20,10 +19,6 @@ object Application extends Controller {
     )
   }
 
-  def index = Action {
-    Ok(views.html.com.itegulov.parser.index(SharedMessages.defaultExpression))
-  }
-
   def parseExpression(expression: String) = Action {
     Logger.info(s"<-- New request for parsing '$expression'")
     val answer = try {
@@ -35,5 +30,4 @@ object Application extends Controller {
     Logger.info(s"--> Responding with '$answer'")
     answer
   }
-
 }

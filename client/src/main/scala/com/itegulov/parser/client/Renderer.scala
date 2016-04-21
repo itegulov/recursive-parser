@@ -19,15 +19,15 @@ object Renderer {
 
   @JSExport
   def main(): Unit = {
-//    val ipc = g.require("electron").ipcMain
-//    val sentenceInput = dom.document.getElementById("sentence_input").asInstanceOf[html.Input]
-//    sentenceInput.onkeypress = (e: KeyboardEvent) => {
-//      if (e.charCode == 13) {
-//        println("Got: " + sentenceInput.value)
-//        ipc.send("parseAction", sentenceInput.value)
-//        e.preventDefault()
-//      }
-//    }
+    val ipc = g.require("electron").ipcRenderer
+    val sentenceInput = dom.document.getElementById("sentence_input").asInstanceOf[html.Input]
+    sentenceInput.onkeypress = (e: KeyboardEvent) => {
+      if (e.charCode == 13) {
+        println("Got: " + sentenceInput.value)
+        ipc.send("parseAction", sentenceInput.value)
+        e.preventDefault()
+      }
+    }
 
     jQuery("body").append("<p>Hello World from Scala.js</p>")
     val filenames = listFiles(".")
