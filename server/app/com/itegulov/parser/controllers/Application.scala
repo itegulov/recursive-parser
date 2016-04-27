@@ -12,7 +12,7 @@ object Application extends Controller {
   implicit val treeWrites = new Writes[Tree] {
     override def writes(tree: Tree) = Json.obj(
       "node" -> tree.node,
-      "ne" -> JsString(tree.ne.getOrElse("none")),
+      "ne" -> JsString(tree.ne),
       "children" -> Json.toJson(tree.children.map(writes(_)))
     )
   }
