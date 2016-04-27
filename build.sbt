@@ -1,19 +1,29 @@
+import sbt.Project.projectToRef
 import java.nio.charset.Charset
 
 name := "RecursiveParserWeb"
 
 version := "1.0"
 
-lazy val scalaV = "2.11.8"
-scalaVersion := scalaV
+lazy val clients = Seq(client)
+lazy val scalaV = "2.11.7"
 
 lazy val server = (project in file("server")).settings(
   scalaVersion := scalaV,
+  scalaJSProjects := clients,
+  pipelineStages := Seq(scalaJSProd, gzip),
   resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases",
   libraryDependencies ++= Seq(
+    "com.vmunier" %% "play-scalajs-scripts" % "0.4.0",
+    "org.webjars" % "jquery" % "2.2.1",
+    "org.webjars" % "d3js" % "3.5.12",
+    "org.webjars.npm" % "dagre-d3" % "0.4.17",
+    "org.webjars" % "bootstrap" % "3.3.6",
     specs2 % Test
   )
-).enablePlugins(PlayScala)
+).enablePlugins(PlayScala).
+  aggregate(clients.map(projectToRef): _*).
+  dependsOn(sharedJvm)
 
 val electronMainPath = SettingKey[File]("electron-main-path", "The absolute path where to write the Electron application's main.")
 
@@ -21,21 +31,6 @@ val electronMain = TaskKey[File]("electron-main", "Generate Electron application
 
 lazy val client = (project in file("client")).settings(
   scalaVersion := scalaV,
-  libraryDependencies += "org.singlespaced" %%% "scalajs-d3" % "0.3.3",
-  libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "0.9.0",
-  libraryDependencies += "be.doeraene" %%% "scalajs-jquery" % "0.9.0",
-
-
-  jsDependencies +=
-    "org.webjars" % "jquery" % "2.2.3" / "jquery.js" commonJSName "jquery",
-
-  jsDependencies += RuntimeDOM,
-
-  scalacOptions += "-deprecation",
-  scalacOptions += "-feature",
-
-  skip in packageJSDependencies := false,
-
   persistLauncher in Compile := true,
   persistLauncher in Test := false,
 
@@ -75,5 +70,24 @@ lazy val client = (project in file("client")).settings(
     val dest = electronMainPath.value
     IO.write(dest, hack + jsCode + launchCode, Charset.forName("UTF-8"))
     dest
-  }
-).enablePlugins(ScalaJSPlugin)
+  },
+
+  libraryDependencies ++= Seq(
+    "org.scala-js" %%% "scalajs-dom" % "0.8.0",
+    "be.doeraene" %%% "scalajs-jquery" % "0.9.0",
+    "org.singlespaced" %%% "scalajs-d3" % "0.3.1"
+  ),
+
+  jsDependencies += RuntimeDOM,
+  skip in packageJSDependencies := false
+).enablePlugins(ScalaJSPlugin).
+  dependsOn(sharedJs)
+
+lazy val shared = (crossProject.crossType(CrossType.Pure) in file("shared")).
+  settings(scalaVersion := scalaV).
+  jsConfigure(_ enablePlugins ScalaJSPlay)
+
+lazy val sharedJvm = shared.jvm
+lazy val sharedJs = shared.js
+
+onLoad in Global := (Command.process("project server", _: State)) compose (onLoad in Global).value

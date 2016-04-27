@@ -2,64 +2,16 @@
 <html>
 <head>
     <title>Hello World!</title>
-    <link rel="stylesheet" type="text/css" href="digraph.css">
+    <script type="text/javascript" src="http://localhost:9000/assets/lib/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="http://localhost:9000/assets/lib/d3js/d3.min.js"></script>
 </head>
 <body>
-<input type="text" id="sentence_input" class="text-input" value="2 3 + 7 - 8 *"
-       placeholder="Type postfix arithmetic expression here (press enter to submit).">
-<svg class="legend-svg">
-    <g transform="translate(100, 15)">
-        <rect class="legend" style="fill : #7e7e7e" rx="5" ry="5" width="90" height="37"></rect>
-        <g transform="translate(10, 10)">
-            <text>
-                <tspan dy="1em">Nonterminal</tspan>
-            </text>
-        </g>
-    </g>
-    <g transform="translate(230, 15)">
-        <rect class="legend" style="fill : #92ff7d" rx="5" ry="5" width="80" height="37"></rect>
-        <g transform="translate(10, 10)">
-            <text>
-                <tspan dy="1em">Operation</tspan>
-            </text>
-        </g>
-    </g>
-    <g transform="translate(350, 15)">
-        <rect class="legend" style="fill : #fdb9ff" rx="5" ry="5" width="70" height="37"></rect>
-        <g transform="translate(10, 10)">
-            <text>
-                <tspan dy="1em">Number</tspan>
-            </text>
-        </g>
-    </g>
-
-    <g transform="translate(460, 15)">
-        <rect class="legend" style="fill : #96c2ff" rx="5" ry="5" width="60" height="37"></rect>
-        <g transform="translate(10, 10)">
-            <text>
-                <tspan dy="1em">Epsilon</tspan>
-            </text>
-        </g>
-    </g>
-</svg>
-
-<div id="attach">
-    <svg id="svg-canvas" class="main-svg"></svg>
-</div>
-
-<script>
-    function moveOnZoom(svg, svgGroup) {
-        svg.call(d3.behavior.zoom().on("zoom", function redraw() {
-            svgGroup.attr("transform",
-                    "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")");
-        }));
-    }
-
-    SVGElement.prototype.getTransformToElement = SVGElement.prototype.getTransformToElement || function (elem) {
-                return elem.getScreenCTM().inverse().multiply(this.getScreenCTM());
-            };
-</script>
-
+<h1>Hello World!</h1>
+We are using io.js
+<script>document.write(process.version)</script>
+and Electron
+<script>document.write(process.versions['electron'])</script>
+.
 
 <script type="text/javascript" src="../target/scala-2.11/client-jsdeps.js"
         onload="window.$ = window.jQuery = module.exports;"></script>

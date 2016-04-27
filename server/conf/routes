@@ -3,6 +3,8 @@
 # ~~~~
 
 # Home page
+GET     /                    com.itegulov.parser.controllers.Application.index
+
 GET     /parse               com.itegulov.parser.controllers.Application.parseExpression(expression)
 
 GET     /assets/*file        controllers.Assets.at(path="/public", file)
