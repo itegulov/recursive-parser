@@ -5,7 +5,7 @@ name := "RecursiveParserWeb"
 version := "1.0"
 
 lazy val clients = Seq(client)
-lazy val scalaV = "2.11.7"
+lazy val scalaV = "2.11.8"
 
 lazy val server = (project in file("server")).settings(
   scalaVersion := scalaV,
@@ -29,9 +29,9 @@ lazy val client = (project in file("client")).settings(
   persistLauncher := true,
   persistLauncher in Test := false,
   libraryDependencies ++= Seq(
-    "org.scala-js" %%% "scalajs-dom" % "0.8.0",
+    "org.scala-js" %%% "scalajs-dom" % "0.9.0",
     "be.doeraene" %%% "scalajs-jquery" % "0.9.0",
-    "org.singlespaced" %%% "scalajs-d3" % "0.3.1"
+    "org.singlespaced" %%% "scalajs-d3" % "0.3.3"
   )
 ).enablePlugins(ScalaJSPlugin).
   dependsOn(sharedJs)

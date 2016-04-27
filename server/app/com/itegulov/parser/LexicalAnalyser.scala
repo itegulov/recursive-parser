@@ -6,85 +6,74 @@ import java.text.ParseException
   * @author itegulov
   */
 class LexicalAnalyser(string: String) {
+  private var curPos: Int = 0
+  private var curToken: Option[Token] = None
 
-  private var _curPos: Int = 0
-  private var _curToken: Option[Token] = None
+  def currentPosition: Int = curPos
 
-  def curPos: Int = _curPos
-
-  def curToken: Option[Token] = _curToken
+  def currentToken: Option[Token] = curToken
 
   private def nextChar(): Char = {
-    _curPos = _curPos + 1
-    string.charAt(_curPos - 1)
+    curPos = curPos + 1
+    string.charAt(curPos - 1)
   }
 
-  private def returnChar() = _curPos -= 1
+  private def returnChar() = curPos -= 1
 
-  private def parseNumberToken(): Either[String, NumberToken] = {
+  private def parseSignedNumberToken(): NumberToken = {
     val sb = new StringBuilder
     var ch = nextChar()
+    if (ch == '-') {
+      sb += '-'
+      ch = nextChar()
+    }
     while (Character.isDigit(ch)) {
       sb.append(ch)
       ch = nextChar()
     }
     returnChar()
-    try {
-      Right(new NumberToken(sb.toString.toInt))
-    } catch {
-      case e: NumberFormatException => Left(sb.toString)
-    }
+    new NumberToken(sb.toString.toInt)
   }
 
   def nextToken(): Option[Token] = {
-    if (_curPos >= string.length) {
-      _curToken = None
-      return _curToken
+    if (curPos >= string.length) {
+      curToken = None
+      return curToken
     }
 
-    var curChar: Char = nextChar()
-    while (_curPos < string.length && Character.isWhitespace(curChar)) {
-      curChar = nextChar()
-    }
-
-    if (_curPos >= string.length && Character.isWhitespace(curChar)) {
-      _curToken = None
-      return _curToken
-    }
-
-    val next = if (_curPos >= string.length) '\n' else nextChar()
-
-    curChar match {
-      case '+' if Character.isWhitespace(next) =>
-        returnChar()
-        _curToken = Some(Add())
-        _curToken
-      case '*' if Character.isWhitespace(next) =>
-        returnChar()
-        _curToken = Some(Mul())
-        _curToken
-      case '-' if Character.isDigit(next) =>
-        returnChar()
-        _curToken = parseNumberToken() match {
-          case Right(numberToken) => Some(new NumberToken(-numberToken.number))
-          case Left(invalidNumber) => throw new ParseException("Expected number, but got '" + invalidNumber + "'", curPos)
-        }
-        _curToken
-      case '-' if Character.isWhitespace(next) =>
-        returnChar()
-        _curToken = Some(Sub())
-        _curToken
-      case _ =>
-        returnChar()
-        returnChar()
-        _curToken = parseNumberToken() match {
-          case Right(numberToken) => Some(numberToken)
-          case _ => throw new ParseException("Expected operation or number, but got '" + curChar + next + "'", curPos)
-        }
-        _curToken
+    val curChar: Char = nextChar()
+    if (Character.isWhitespace(curChar)) {
+      nextToken()
+    } else {
+      curChar match {
+        case _ if "^-?[0-9]+".r.findFirstIn(string.substring(curPos - 1)).nonEmpty =>
+          returnChar()
+          curToken = Some(parseSignedNumberToken())
+          curToken
+        case '+' =>
+          curToken = Some(Add())
+          curToken
+        case '*' =>
+          curToken = Some(Mul())
+          curToken
+        case '-' =>
+          curToken = Some(Sub())
+          curToken
+        case _ =>
+          throw new ParseException("Expected operation or number, but got '" + curChar + "'", currentPosition)
+      }
     }
   }
 
-
-
+  def hasNext: Boolean = {
+    val pos = curPos
+    val token = curToken
+    nextToken() match {
+      case Some(_) =>
+        curPos = pos
+        curToken = token
+        true
+      case _ => false
+    }
+  }
 }
