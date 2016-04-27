@@ -60,10 +60,12 @@ object MainJS extends JSApp {
       )
 
       edges.foreach(edge =>
-        g.setEdge(edge.source.toString, edge.target.toString, js.Dictionary("lineTension" -> 0.8, "lineInterpolate" -> "bundle"))
+        g.setEdge(edge.source.toString, edge.target.toString, js.Dictionary("lineInterpolate" -> "cardinal"))
       )
 
       val render = Dagre.newD3Renderer
+
+      d3.select("#svg-canvas g").remove()
 
       val svg = d3.select("#svg-canvas")
       val svgGroup = svg.append("g")
