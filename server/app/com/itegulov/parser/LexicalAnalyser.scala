@@ -5,7 +5,8 @@ import java.text.ParseException
 /**
   * @author itegulov
   */
-class LexicalAnalyser(string: String) {
+class LexicalAnalyser(s: String) {
+  val string = s + ' '
   private var curPos: Int = 0
   private var curToken: Option[Token] = None
 
